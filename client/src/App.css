@@ -1,0 +1,19 @@
+.is-primary {
+  background-color: rgb(243,236,12) !important;
+  color: rgb(229,71,60) !important;
+}
+
+.navbar {
+  background-color: rgb(17,67,128)!important;
+  border-bottom: solid 7px rgb(229,71,60) !important;
+}
+
+#main {
+  padding: 10px;
+}
+
+.envase:hover {
+  cursor: pointer;
+  animation: fadeIn;
+  animation-duration:3s;
+}
