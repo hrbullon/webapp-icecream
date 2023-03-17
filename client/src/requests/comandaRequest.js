@@ -1,4 +1,21 @@
-const URL_API = "http://localhost:8569";
+import { config } from "../config/config";
+
+const URL_API = config.API_URL;
+
+export const getComandaCall = (id) => {
+  
+  return fetch(`${URL_API}/comanda/${id}`, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json'
+      }
+  })
+  .then(response => response.json())
+  .then(data => { return data })
+  .catch(error => {
+      console.error('Ha ocurrido un error', error);
+  });
+}
 
 export const removeComandaDetailCall = (id) => {
     

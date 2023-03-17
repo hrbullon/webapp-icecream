@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Material } from './Material'
 
-export const Accodion = ({ title, tipo, index, items, saveDetail }) => {
+export const Accodion = ({ title, tipo, index, items, saveComandaDetail }) => {
  
   const [itemsFiltered, setItemsFiltered] = useState([]);
 
@@ -25,7 +25,7 @@ export const Accodion = ({ title, tipo, index, items, saveDetail }) => {
             </h2>
             <div id={`flush-collapse${index}`} className="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
               <div className="accordion-body">
-                  <Material items={itemsFiltered} saveDetail={ saveDetail }/>
+                  <Material items={itemsFiltered} saveComandaDetail={ saveComandaDetail } width={3} />
               </div>
             </div>
         </div>

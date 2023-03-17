@@ -1,12 +1,14 @@
 import React from 'react'
 
-export const Material = ({ items, saveDetail }) => {
+export const Material = ({ items, saveComandaDetail, width }) => {
   return (
     <div className='row'>
     {
         items.map( item => {
-        return <div key={item.id} onClick={ (e)=> saveDetail(item) } className='col-3 mt-2'>
+        return  <div className={ `col-${width}`}>
+                  <div key={item.id} className="card mt-2" onClick={ (e)=> saveComandaDetail( item) }>
                     <img src={ item.img_producto } alt={ item.nombre }/>
+                  </div>
                 </div>
         })
     }

@@ -1,15 +1,27 @@
 
 import { useState, useEffect, Fragment } from 'react';
 
+/***Third */
 import 'animate.css';
 import swal from 'sweetalert';
 
 import './App.css';
+
+/**Requests */
+import { 
+  finnishComandaCall, 
+  getComandaCall, 
+  saveComandaCall, 
+  saveComandaDetailCall } from './requests/comandaRequest';
+import { getInsumosCall } from './requests/insumoRequest';
+
+/**Componests Views */
 import { Accodion } from './components/Accodion';
 import { IceCreamDetails } from './components/IceCreamDetails';
-import { finnishComandaCall, saveComandaCall, saveComandaDetailCall } from './requests/comandaRequest';
-
-const URL_API = "http://localhost:8569";
+import { Material } from './components/Material';
+import { Alert } from './components/Alert';
+import { Header } from './components/Header';
+import { FormComanda } from './components/FormComanda';
 
 function App() {
   
@@ -36,41 +48,26 @@ function App() {
 
   }, [])
 
-  const formatDocument = (event) => {
-
-    const string = event.target.value.slice(0,1);
-
-    if(string !== ""){
-      const value = event.target.value.replace(/\D/g,'').slice(0, 9);
-      event.target.value = `${string.toUpperCase()}-${value}`;
-      return event.target.value;
-    }
-  }
-
   const getComanda = async (id) => {
-    const comanda = await fetch(`${URL_API}/comanda/${id}`);
-    
-    comanda.json().then( (data) => {
+
+    getComandaCall(id).then( data => {
+
       setComandaId(data.comanda.id);
       setCedula(data.comanda.cedula);
       setIceCreamDetails(data.details);
-    });
+
+    })
   }
 
   const getInsumos = async () => {
     
-    const insumos = await fetch(`${URL_API}/insumos`);
-    
-    insumos.json().then( (results) => {
-
-      const envasesFiltered = results.filter(item => item.tipo_producto === 1);
-
-      setItems(results);
+    getInsumosCall().then( data => {
+      
+      const envasesFiltered = data.filter(item => item.tipo_producto === 1);
+      setItems(data);
       setEnvases(envasesFiltered);
-
-    }).catch( e => {
-      alert("Hubo un error, por favor cargar de nuevo el sitio")
     })
+
   }
 
   const saveComanda = () => {
@@ -153,24 +150,12 @@ function App() {
 
   return (
     <Fragment>
-      <nav className="navbar bg-light">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="#">
-            <img src="/img/logo.jpg" alt="Helados Cali Logo - Brand" width={80} />
-          </a>
-          <form class="d-flex" role="search">
-          <button class="btn btn-warning" onClick={ finnishComanda } type="button">Finalizar</button>
-        </form>
-        </div>
-      </nav>
+      <Header callAction={ finnishComanda }/>
       <div className='main m-2'>
         <div className='row'>
           <div className='col-12 '>
             { success &&
-              <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Comanda creada!</strong> A continuación, agregue los detalles de la comanda.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
+              <Alert title="Comanda creada!" text="A continuación, agregue los detalles de la comanda." />
             }
           </div>
           <div className='col-3'>
@@ -178,18 +163,7 @@ function App() {
               <div className='col-12'>
                 <h6>Materiales</h6>
               </div>
-              {
-                envases.map( envase => {
-                  return  <div className='col-6'>
-                            <div className="card" onClick={ (e)=> saveComandaDetail( envase) }>
-                              <img src={ envase.img_producto }/>
-                              <div className="card-body">
-                                <small>{ envase.nombre }</small>
-                              </div>
-                            </div>
-                          </div>
-                })
-              }
+              <Material items={ envases } saveComandaDetail={ saveComandaDetail } width={6}/>
             </div>
           </div>
           <div className='col-6'>
@@ -199,23 +173,22 @@ function App() {
             <div className="accordion accordion-flush" id="accordionFlushExample">
               {
                  tipos.map( (tipo, index) => {
-                   return <Accodion key={index} title={tipo} tipo={((index+1))} index={ (index+1) } items={items} saveDetail={ saveComandaDetail }/>
+                   return <Accodion key={index} title={tipo} tipo={((index+1))} index={ (index+1) } items={items} saveComandaDetail={ saveComandaDetail }/>
                 })
               }
             </div>
           </div>
           <div className='col-3'>
-            <div className="card">
-                <div className="card-body">
-                    <input type="text" name='cedula' onKeyUp={ (e) => formatDocument(e) }  onChange={ (e)=> setCedula(e.target.value) } value={ cedula } className='form-control' placeholder='Ingrese #nro cedula'/>
-                    <div class="d-grid gap-2 mt-2">
-                      <button type='button' onClick={ saveComanda } className='btn btn-sm btn-primary'>
-                        <i className='fa fa-plus'></i>Nueva comanda
-                      </button>
-                    </div>
-                </div>
-            </div>
-            <IceCreamDetails items={ iceCreamDetails } setIceCreamDetails={setIceCreamDetails}/>
+
+            <FormComanda 
+              cedula={ cedula } 
+              setCedula={ setCedula } 
+              callAction={ saveComanda }/>
+
+            <IceCreamDetails 
+              items={ iceCreamDetails } 
+              setIceCreamDetails={setIceCreamDetails}/>
+
           </div>
         </div>
       </div>
