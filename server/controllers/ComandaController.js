@@ -35,9 +35,19 @@ const updateComanda = async (req, res) => {
         if(comanda && details){
             
             let sum = 0;
-            details.map( item =>  sum+=Number(item.pvp) );
-           
-            ComandaModel.update({ precio_final: sum }, { where: { id: id } })
+            let descripcion = "";
+
+            details.map( item => {
+               
+                sum+=Number(item.pvp);
+
+                //Si el tipo de producto
+                if(descripcion == ""){
+                    descripcion = item.descripcion;
+                }
+            });
+
+            ComandaModel.update({ descripcion: descripcion ,precio_final: sum }, { where: { id: id } })
             .then(numAffectedRows => {
                 res.json({ message: "Ok", numAffectedRows });
             })

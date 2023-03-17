@@ -1,6 +1,6 @@
 const db = require("../database/db.js")
 
-const { DataTypes } = require("sequelize")
+const { DataTypes } = require("sequelize");
 
 const ComandaDetalleModel = db.define('ComandaDetalle', {
   h_comanda_id: DataTypes.INTEGER,

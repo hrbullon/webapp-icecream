@@ -1,6 +1,6 @@
 const db = require("../database/db.js")
 
-const { DataTypes } = require("sequelize")
+const { DataTypes } = require("sequelize");
 
 const InsumoModel = db.define('Insumo', {
   nombre: DataTypes.STRING,
