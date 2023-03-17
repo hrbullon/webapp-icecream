@@ -2,10 +2,12 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 
-const app = express();
-const port = 8569;
+require('dotenv').config();
 
-app.use(express.static(path.join(__dirname, 'client/build')));
+const app = express();
+const port = process.env.PORT;
+
+app.use(express.static(path.join(__dirname, 'build')));
 
 const cors = require('cors');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,7 +22,7 @@ app.use(cors())
 app.use( require('./routes/index') );
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build/index.html'));
+    res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
 //Database Connection
@@ -28,14 +30,14 @@ const db = require('./database/db');
 
 try {
     db.authenticate().then( () => {
-        console.log("Conexión exitosa a la base de datos")
+        console.log("Database connection successfull")
     })
 } catch (error) {
-    console.log("Error en la conexión")
+    console.log("Error connection, please check settings in .env file")
 }
 
 app.listen(port, () => {
-  console.log(`La aplicación está escuchando en http://:${port}`);
+  console.log(`App running on port:${port}`);
 });
 
 
