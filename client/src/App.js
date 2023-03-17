@@ -12,11 +12,11 @@ const URL_API = "http://localhost:8569";
 
 function App() {
   
+  const tipos = ["Envases","Sabores","Siropes","Chispas"];
+
   const [success, setSuccess] = useState(false);
   const [cedula, setCedula] = useState("");
   const [comandaId, setComandaId] = useState(0);
-
-  const [tipos, setTipos] = useState(["Envases","Sabores","Siropes","Chispas"]);
   
   const [items, setItems] = useState([]);
   const [envases, setEnvases] = useState([]);
@@ -34,6 +34,17 @@ function App() {
     }
 
   }, [])
+
+  const formatDocument = (event) => {
+
+    const string = event.target.value.slice(0,1);
+
+    if(string !== ""){
+      const value = event.target.value.replace(/\D/g,'').slice(0, 9);
+      event.target.value = `${string.toUpperCase()}-${value}`;
+      return event.target.value;
+    }
+  }
 
   const getComanda = async (id) => {
     const comanda = await fetch(`${URL_API}/comanda/${id}`);
@@ -222,7 +233,7 @@ function App() {
           <div className='col-3'>
             <div className="card">
                 <div className="card-body">
-                    <input type="text" name='cedula' onChange={ (e)=> setCedula(e.target.value) } value={ cedula } className='form-control' placeholder='Ingrese #nro cedula'/>
+                    <input type="text" name='cedula' onKeyUp={ (e) => formatDocument(e) }  onChange={ (e)=> setCedula(e.target.value) } value={ cedula } className='form-control' placeholder='Ingrese #nro cedula'/>
                     <div class="d-grid gap-2 mt-2">
                       <button type='button' onClick={ saveComanda } className='btn btn-sm btn-primary'>
                         <i className='fa fa-plus'></i>Nueva comanda

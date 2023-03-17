@@ -8,7 +8,7 @@ export const Accodion = ({ title, tipo, index, items, saveDetail }) => {
   useEffect(() => {
      const filtered = items.filter( item => item.tipo_producto === tipo); 
      filterItems(filtered);
-  }, [items])
+  }, [items, tipo])
 
   const filterItems = (items) => {
     setItemsFiltered(items);
