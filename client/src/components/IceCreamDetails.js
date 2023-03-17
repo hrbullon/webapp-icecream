@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
-const URL_API = "http://localhost:8569";
+import { TableDetails } from './TableDetails';
+import { removeComandaDetailCall } from '../requests/comandaRequest';
 
 export const IceCreamDetails = ({ items, setIceCreamDetails }) => {
 
@@ -20,25 +21,13 @@ export const IceCreamDetails = ({ items, setIceCreamDetails }) => {
 
   }, [items]);
 
-  const removeItem = (item) => {
-    
-    const id = item.id;
-    
-    fetch(`${URL_API}/insumos/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        const itemsFiltered = items.filter( item => item.id !== id);
-        setIceCreamDetails(itemsFiltered);
-      })
-      .catch(error => {
-        console.error('Ha ocurrido un error', error);
-      });
-  } 
+  const removeComandaDetail = (id) => {
+
+    removeComandaDetailCall(id).then(data => {
+      const itemsFiltered = items.filter( item => item.id !== id);
+      setIceCreamDetails(itemsFiltered);
+    });
+  }
 
   return (
     <Fragment>
@@ -47,30 +36,7 @@ export const IceCreamDetails = ({ items, setIceCreamDetails }) => {
                 <p className=''><b>Subtotal:</b> { subtotal }</p>
                 <hr/>
                 <h5 className='has-text-centered'>Detalle de helado</h5>
-                <table className='table'>
-                    <thead>
-                        <tr>
-                        <th>#</th>
-                        <th>Descripción</th>
-                        <th>Costo</th>
-                        <th className='text-center'>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            items.map( (item, index) => {
-                                return <tr key={index}>
-                                            <td>{ (index+1) }</td>
-                                            <td>{ item.descripcion }</td>
-                                            <td>{ item.pvp }</td>
-                                            <td className='text-center'>
-                                                <button onClick={ (e) => removeItem(item) } className="btn btn-sm btn-danger">x</button>
-                                            </td>
-                                        </tr>
-                            })
-                        }
-                    </tbody>
-                </table>
+                <TableDetails items={ items } action={ removeComandaDetail }/>
             </div>
         </div>                
     </Fragment>

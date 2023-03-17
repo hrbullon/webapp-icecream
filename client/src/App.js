@@ -7,6 +7,7 @@ import swal from 'sweetalert';
 import './App.css';
 import { Accodion } from './components/Accodion';
 import { IceCreamDetails } from './components/IceCreamDetails';
+import { finnishComandaCall, saveComandaCall, saveComandaDetailCall } from './requests/comandaRequest';
 
 const URL_API = "http://localhost:8569";
 
@@ -73,36 +74,29 @@ function App() {
   }
 
   const saveComanda = () => {
+    
+    if(cedula !== ""){
 
-    if(cedula > 0 && cedula !== ""){
-      fetch(`${URL_API}/comanda`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          cedula,
-          descripcion: "Comanda - Borrador",
-          precio_final: 0,
-          estatus: 0
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
+      const body = {
+        cedula,
+        descripcion: "Comanda - Borrador",
+        precio_final: 0,
+        estatus: 0
+      }
 
+      saveComandaCall(body).then(data => {
+        //Save in localStorage
         localStorage.setItem("comanda", data.detail.id);
         localStorage.setItem("cedula", cedula);
         
+        //Set success
         setSuccess(true);
         setComandaId(data.detail.id);
 
-        //Limpio el detalle de items
+        //Clean details
         setIceCreamDetails([]);
-        
-      })
-      .catch(error => {
-        console.error('Ha ocurrido un error', error);
       });
+
     } else {
       swal("Error!", "Ingrese una cédula para generar la comanda", "error");
     }
@@ -110,71 +104,51 @@ function App() {
 
   const finnishComanda = () => {
 
-    if(cedula > 0 && cedula !== "" && comandaId > 0){
-      
-      fetch(`${URL_API}/comanda/${comandaId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          cedula,
-          comanda: comandaId
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
+    if(cedula !== "" && comandaId > 0){
 
-        //*********Limpio el formulario completamente *******/
+      const body = {
+        cedula,
+        comanda: comandaId
+      };
+
+      finnishComandaCall(body).then(data => {
+        //*********Clean form*******/
         setCedula("");
         setComandaId(0);
         setIceCreamDetails([]);
-
+        //Clean localStorage
         localStorage.removeItem("cedula");
         localStorage.removeItem("comanda");
-
+  
         swal("Bien!", "Comanda finalizada!", "success");
-
       })
-      .catch(error => {
-        console.error('Ha ocurrido un error', error);
-      });
+      
     } else {
       swal("Error!", "Error al finalizar la comanda", "error");
     }
   }
 
-  const saveDetail = (envase) => {
+  const saveComandaDetail = (envase) => {
 
     if(comandaId > 0){
+      
+      const body = {
+        h_comanda_id: comandaId,
+        h_insumo_id: envase.id,
+        descripcion: envase.nombre,
+        costo: envase.costo,
+        pvp: envase.precio_pvp,
+        porcion: envase.porcion,
+        unidad_medida: envase.unidad_medida
+      }
 
-      fetch(`${URL_API}/insumos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          h_comanda_id: comandaId,
-          h_insumo_id: envase.id,
-          descripcion: envase.nombre,
-          costo: envase.costo,
-          pvp: envase.precio_pvp,
-          porcion: envase.porcion,
-          unidad_medida: envase.unidad_medida
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
+      saveComandaDetailCall(body).then( data => {
         setIceCreamDetails(prevState => prevState.concat(data.detail));
       })
-      .catch(error => {
-        console.error('Ha ocurrido un error', error);
-      });
 
     }else{
       swal("Alerta!", "Debe generar primero una comanda", "warning");
     }
-    
   }
 
   return (
@@ -206,14 +180,14 @@ function App() {
               </div>
               {
                 envases.map( envase => {
-                  return <div className='col-6'>
-                    <div className="card" onClick={ (e)=> saveDetail( envase) }>
-                      <img src={ envase.img_producto }/>
-                      <div className="card-body">
-                        <small>{ envase.nombre }</small>
-                      </div>
-                    </div>
-                  </div>
+                  return  <div className='col-6'>
+                            <div className="card" onClick={ (e)=> saveComandaDetail( envase) }>
+                              <img src={ envase.img_producto }/>
+                              <div className="card-body">
+                                <small>{ envase.nombre }</small>
+                              </div>
+                            </div>
+                          </div>
                 })
               }
             </div>
@@ -225,7 +199,7 @@ function App() {
             <div className="accordion accordion-flush" id="accordionFlushExample">
               {
                  tipos.map( (tipo, index) => {
-                   return <Accodion key={index} title={tipo} tipo={((index+1))} index={ (index+1) } items={items} saveDetail={ saveDetail }/>
+                   return <Accodion key={index} title={tipo} tipo={((index+1))} index={ (index+1) } items={items} saveDetail={ saveComandaDetail }/>
                 })
               }
             </div>
