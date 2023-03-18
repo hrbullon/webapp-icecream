@@ -48,8 +48,8 @@ const updateComanda = async (req, res) => {
             });
 
             ComandaModel.update({ descripcion: descripcion ,precio_final: sum }, { where: { id: id } })
-            .then(numAffectedRows => {
-                res.json({ message: "Ok", numAffectedRows });
+            .then(comanda => {
+                res.json({ message: "Ok", comanda });
             })
             .catch(err => {
                 res.json({ message: "Error" });
